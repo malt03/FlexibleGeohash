@@ -1,32 +1,86 @@
 import XCTest
 @testable import FlexibleGeohash
 
+protocol TestCase: Decodable {
+    static var fileName: String { get }
+}
+extension TestCase {
+    static func get() -> [Self] {
+        let url = Bundle(for: FlexibleGeohashTests.self).url(forResource: fileName, withExtension: "json")!
+        let testData = try! Data(contentsOf: url)
+        return try! JSONDecoder().decode([Self].self, from: testData)
+    }
+}
+
 final class FlexibleGeohashTests: XCTestCase {
-    struct EncodeTestCase: Decodable {
+    struct EncodeTestCase: TestCase {
+        static var fileName: String { "encode_cases" }
+
         let hash: String
         let lat: Double
         let lng: Double
     }
     
-    struct DecodeTestCase: Decodable {
+    struct DecodeTestCase: TestCase {
+        static var fileName: String { "decode_cases" }
+
         let hash: String
         let region: Region
     }
     
+    struct NeighborsTestCase: TestCase {
+        static var fileName: String { "neighbors_cases" }
+
+        let hash: String
+        let neighbors: [String]
+    }
+    
     func testEncode() {
-        let testData = try! Data(contentsOf: Bundle(for: type(of: self)).url(forResource: "encode_cases", withExtension: "json")!)
-        let testCases = try! JSONDecoder().decode([EncodeTestCase].self, from: testData)
-        for testCase in testCases {
+        for testCase in EncodeTestCase.get() {
             XCTAssertEqual(Geohash(coordinate: LatLng(testCase.lat, testCase.lng)).hash, testCase.hash)
         }
     }
     
+    func testEncodeAndRedecode() {
+        for testCase in EncodeTestCase.get() {
+            let coordinate = LatLng(testCase.lat, testCase.lng)
+            let region = Geohash(coordinate: coordinate).region
+            XCTAssert(region.contains(coordinate: coordinate), "\(coordinate) is not contained in \(region)")
+        }
+    }
+    
     func testDecode() {
-        let testData = try! Data(contentsOf: Bundle(for: type(of: self)).url(forResource: "decode_cases", withExtension: "json")!)
-        let testCases = try! JSONDecoder().decode([DecodeTestCase].self, from: testData)
-        for testCase in testCases {
+        for testCase in DecodeTestCase.get() {
             XCTAssertEqual(Geohash(hash: testCase.hash).region, testCase.region)
         }
+    }
+    
+    func testDecodeAndRehash() {
+        for testCase in DecodeTestCase.get() {
+            let center = Geohash(hash: testCase.hash).region.center
+            XCTAssertEqual(Geohash(coordinate: center, precision: testCase.hash.count).hash, testCase.hash)
+        }
+    }
+    
+    func testNeighbors() {
+        for testCase in NeighborsTestCase.get() {
+            let neighbors = Geohash(hash: testCase.hash).neighbors.map { $0.hash }
+            XCTAssertEqual(neighbors, testCase.neighbors)
+        }
+    }
+    
+    func testNeighbor() {
+        for testCase in NeighborsTestCase.get() {
+            let neighbor = Geohash(hash: testCase.hash).getNeighbor(direction: .n).hash
+            XCTAssertEqual(neighbor, testCase.neighbors[0])
+        }
+    }
+}
+
+extension Region {
+    func contains(coordinate: LatLng) -> Bool {
+        ((center.latitude - span.latitude / 2)...(center.latitude + span.latitude / 2)).contains(coordinate.latitude) &&
+            ((center.longitude - span.longitude / 2)...(center.longitude + span.longitude / 2)).contains(coordinate.longitude)
     }
 }
 
