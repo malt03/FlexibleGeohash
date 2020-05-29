@@ -8,10 +8,16 @@
 import Foundation
 import CoreLocation
 
-public struct Geohash {
-    public struct Bounding {
-        let center: LatLng
-        let span: LatLng
+final class Geohash {
+    public enum Direction: CaseIterable {
+        case n
+        case ne
+        case e
+        case se
+        case s
+        case sw
+        case w
+        case nw
     }
     
     public enum Encoding: Int {
@@ -26,6 +32,8 @@ public struct Geohash {
     private let lngInt: UInt32
     private let length: Int
     private let encoding: Encoding
+    private var hashCache: String?
+    private var regionCache: Region?
     
     public init(coordinate: LatLngProtocol, length: Int = 12, encoding: Encoding = .base32) {
         latInt = Geohash.encodeRange(coordinate.latitude, 90)
@@ -40,18 +48,56 @@ public struct Geohash {
         lngInt = Geohash.squash(intHash >> 1)
         length = hash.count
         self.encoding = encoding
+        hashCache = hash
     }
     
-    public func encode() -> String {
+    private init(latInt: UInt32, lngInt: UInt32, length: Int, encoding: Encoding) {
+        self.latInt = latInt
+        self.lngInt = lngInt
+        self.length = length
+        self.encoding = encoding
+    }
+    
+    public func getNeighbor(direction: Direction) -> Geohash {
+        let latInt: UInt32
+        switch direction {
+        case .e, .w: latInt = self.latInt
+        case .n, .ne, .nw:
+            latInt = Geohash.encodeRange(region.center.latitude + region.span.latitude, 90)
+        case .s, .se, .sw:
+            latInt = Geohash.encodeRange(region.center.latitude - region.span.latitude, 90)
+        }
+        let lngInt: UInt32
+        switch direction {
+        case .n, .s: lngInt = self.lngInt
+        case .e, .ne, .se:
+            lngInt = Geohash.encodeRange(region.center.longitude + region.span.longitude, 180)
+        case .w, .nw, .sw:
+            lngInt = Geohash.encodeRange(region.center.longitude - region.span.longitude, 180)
+        }
+        return .init(latInt: latInt, lngInt: lngInt, length: length, encoding: encoding)
+    }
+    
+    public func getNeighbors() -> [Geohash] {
+        Direction.allCases.map { getNeighbor(direction: $0) }
+    }
+    
+    public var hash: String {
+        if let hash = hashCache { return hash }
         let intHash = Geohash.spread(latInt) | (Geohash.spread(lngInt) << 1)
-        return Geohash.encodeBase(intHash, encoding: encoding, length: length)
+        let hash = Geohash.encodeBase(intHash, encoding: encoding, length: length)
+        hashCache = hash
+        return hash
     }
     
-    public func decode() -> Bounding {
+    public var region: Region {
+        if let region = regionCache { return region }
         let lat = Geohash.decodeRange(latInt, 90)
         let lng = Geohash.decodeRange(lngInt, 180)
         let error = Geohash.error(bitCount: length * encoding.rawValue)
-        return Bounding(center: .init(lat + error.latitude / 2, lng + error.longitude / 2), span: error)
+        let region = Region(center: .init(lat + error.latitude / 2, lng + error.longitude / 2), span: error)
+        regionCache = region
+        return region
     }
     
     private static func error(bitCount: Int) -> LatLng {
