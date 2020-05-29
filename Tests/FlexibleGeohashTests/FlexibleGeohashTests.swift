@@ -12,7 +12,13 @@ final class FlexibleGeohashTests: XCTestCase {
         let testData = try! Data(contentsOf: Bundle(for: type(of: self)).url(forResource: "test_cases", withExtension: "json")!)
         let testCases = try! JSONDecoder().decode([TestCase].self, from: testData)
         for testCase in testCases {
-            XCTAssertEqual(Geohash(lat: testCase.lat, lng: testCase.lng).encode(), testCase.hash)
+            XCTAssertEqual(Geohash(coordinate: LatLng(testCase.lat, testCase.lng)).encode(), testCase.hash)
         }
+    }
+    
+    func testHogeTest() {
+        print(Geohash(hash: "xnbjb").decode())
+        
+        
     }
 }
