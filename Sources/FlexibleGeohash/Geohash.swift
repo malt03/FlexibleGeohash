@@ -7,18 +7,30 @@
 
 import Foundation
 
-struct Geohash {
+public struct Geohash {
+    public enum Encoding: Int {
+        case base2 = 1
+        case base4
+        case base8
+        case base16
+        case base32
+    }
+    
     private let latInt: UInt32
     private let lngInt: UInt32
     
-    init(lat: Double, lng: Double) {
+    public init(lat: Double, lng: Double) {
         latInt = Geohash.encodeRange(lat, 90)
         lngInt = Geohash.encodeRange(lng, 180)
     }
     
-    func encode(length: Int, bitCount: Int = 5) -> String {
+//    init(hash: String, encoding: Encoding = .base32) {
+//
+//    }
+    
+    public func encode(length: Int = 12, encoding: Encoding = .base32) -> String {
         let intHash = Geohash.spread(latInt) | (Geohash.spread(lngInt) << 1)
-        return Geohash.encodeBase(intHash, bitCount: bitCount, length: length)
+        return Geohash.encodeBase(intHash, encoding: encoding, length: length)
     }
         
     private static let exp232: Double = exp2(32)
@@ -39,13 +51,12 @@ struct Geohash {
     }
     
     private static let lookup = [Character]("0123456789bcdefghjkmnpqrstuvwxyz")
-    private static func encodeBase(_ value: UInt64, bitCount: Int, length: Int) -> String {
-        let mask = (0..<bitCount).reduce(0 as UInt64, { $0 | 1 << $1 })
+    private static func encodeBase(_ value: UInt64, encoding: Encoding, length: Int) -> String {
+        let mask = (0..<encoding.rawValue).reduce(0 as UInt64, { $0 | 1 << $1 })
         return String(
-            stride(from: 64 - bitCount * length, to: 64, by: bitCount).reversed().map { (i) -> Character in
+            stride(from: 64 - encoding.rawValue * length, to: 64, by: encoding.rawValue).reversed().map { (i) -> Character in
                 lookup[Int(value >> i & mask)]
             }
         )
     }
 }
-

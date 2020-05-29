@@ -2,14 +2,17 @@ import XCTest
 @testable import FlexibleGeohash
 
 final class FlexibleGeohashTests: XCTestCase {
-    func testExample() {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct
-        // results.
-        XCTAssertEqual(FlexibleGeohash().text, "Hello, World!")
+    struct TestCase: Decodable {
+        let hash: String
+        let lat: Double
+        let lng: Double
     }
-
-    static var allTests = [
-        ("testExample", testExample),
-    ]
+    
+    func test() {
+        let testData = try! Data(contentsOf: Bundle(for: type(of: self)).url(forResource: "test_cases", withExtension: "json")!)
+        let testCases = try! JSONDecoder().decode([TestCase].self, from: testData)
+        for testCase in testCases {
+            XCTAssertEqual(Geohash(lat: testCase.lat, lng: testCase.lng).encode(), testCase.hash)
+        }
+    }
 }
