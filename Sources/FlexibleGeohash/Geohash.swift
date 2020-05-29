@@ -143,11 +143,11 @@ public struct Geohash {
     private static let lookup = [Character]("0123456789bcdefghjkmnpqrstuvwxyz")
     private static func encodeBase(_ value: UInt64, encoding: Encoding, length: Int) -> String {
         let mask = encoding.getMask()
-        return String(
-            stride(from: encoding.rawValue, to: encoding.rawValue * length + 1, by: encoding.rawValue).map { (i) -> Character in
-                lookup[Int(value >> (64 - i) & mask)]
-            }
-        )
+        var hash = ""
+        for i in stride(from: encoding.rawValue, to: encoding.rawValue * length + 1, by: encoding.rawValue) {
+            hash += String(lookup[Int(value >> (64 - i) & mask)])
+        }
+        return hash
     }
     private static func decodeBase(_ value: String, encoding: Encoding) -> UInt64 {
         let mask = (0..<encoding.rawValue).reduce(0 as UInt64, { $0 | 1 << $1 })
