@@ -37,41 +37,41 @@ final class FlexibleGeohashTests: XCTestCase {
     
     func testEncode() {
         for testCase in EncodeTestCase.get() {
-            XCTAssertEqual(Geohash(coordinate: LatLng(testCase.lat, testCase.lng)).hash, testCase.hash)
+            XCTAssertEqual(Geohash(coordinate: LatLng(testCase.lat, testCase.lng)).hash(), testCase.hash)
         }
     }
-    
+
     func testEncodeAndRedecode() {
         for testCase in EncodeTestCase.get() {
             let coordinate = LatLng(testCase.lat, testCase.lng)
-            let region = Geohash(coordinate: coordinate).region
+            let region = Geohash(coordinate: coordinate).region()
             XCTAssert(region.contains(coordinate: coordinate), "\(coordinate) is not contained in \(region)")
         }
     }
-    
+
     func testDecode() {
         for testCase in DecodeTestCase.get() {
-            XCTAssertEqual(Geohash(hash: testCase.hash).region, testCase.region)
+            XCTAssertEqual(Geohash(hash: testCase.hash).region(), testCase.region)
         }
     }
-    
+
     func testDecodeAndRehash() {
         for testCase in DecodeTestCase.get() {
-            let center = Geohash(hash: testCase.hash).region.center
-            XCTAssertEqual(Geohash(coordinate: center, precision: testCase.hash.count).hash, testCase.hash)
+            let center = Geohash(hash: testCase.hash).region().center
+            XCTAssertEqual(Geohash(coordinate: center, precision: testCase.hash.count).hash(), testCase.hash)
         }
     }
-    
+
     func testNeighbors() {
         for testCase in NeighborsTestCase.get() {
-            let neighbors = Geohash(hash: testCase.hash).neighbors.map { $0.hash }
+            let neighbors = Geohash(hash: testCase.hash).neighbors().map { $0.hash() }
             XCTAssertEqual(neighbors, testCase.neighbors)
         }
     }
-    
+
     func testNeighbor() {
         for testCase in NeighborsTestCase.get() {
-            let neighbor = Geohash(hash: testCase.hash).getNeighbor(direction: .n).hash
+            let neighbor = Geohash(hash: testCase.hash).getNeighbor(direction: .n).hash()
             XCTAssertEqual(neighbor, testCase.neighbors[0])
         }
     }

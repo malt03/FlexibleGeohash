@@ -14,6 +14,6 @@ extension LatLng {
     func mkSpan() -> MKCoordinateSpan { .init(latitudeDelta: latitude, longitudeDelta: longitude) }
 }
 extension Region {
-    func mk() -> MKCoordinateRegion { .init(center: center.clCoordinate(), span: span.mkSpan()) }
+    public func mk() -> MKCoordinateRegion { .init(center: center.clCoordinate(), span: span.mkSpan()) }
 }
 #endif
