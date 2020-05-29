@@ -157,7 +157,7 @@ final class Geohash {
     private static func encodeBase(_ value: UInt64, encoding: Encoding, length: Int) -> String {
         let mask = encoding.getMask()
         return String(
-            stride(from: 0, to: encoding.rawValue * length, by: encoding.rawValue).map { (i) -> Character in
+            stride(from: encoding.rawValue, to: encoding.rawValue * length + 1, by: encoding.rawValue).map { (i) -> Character in
                 lookup[Int(value >> (64 - i) & mask)]
             }
         )
