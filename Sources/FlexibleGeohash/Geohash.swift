@@ -26,6 +26,16 @@ final class Geohash {
         case base8
         case base16
         case base32
+        
+        fileprivate func getMask() -> UInt64 {
+            switch self {
+            case .base2: return 0x01
+            case .base4: return 0x03
+            case .base8: return 0x07
+            case .base16: return 0x0f
+            case .base32: return 0x1f
+            }
+        }
     }
     
     private let latInt: UInt32
@@ -145,10 +155,10 @@ final class Geohash {
     
     private static let lookup = [Character]("0123456789bcdefghjkmnpqrstuvwxyz")
     private static func encodeBase(_ value: UInt64, encoding: Encoding, length: Int) -> String {
-        let mask = (0..<encoding.rawValue).reduce(0 as UInt64, { $0 | 1 << $1 })
+        let mask = encoding.getMask()
         return String(
-            stride(from: 64 - encoding.rawValue * length, to: 64, by: encoding.rawValue).reversed().map { (i) -> Character in
-                lookup[Int(value >> i & mask)]
+            stride(from: 0, to: encoding.rawValue * length, by: encoding.rawValue).map { (i) -> Character in
+                lookup[Int(value >> (64 - i) & mask)]
             }
         )
     }
