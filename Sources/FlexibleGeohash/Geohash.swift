@@ -74,18 +74,20 @@ public struct Geohash {
         switch direction {
         case .e, .w: latInt = self.latInt
         case .n, .ne, .nw:
-            latInt = Geohash.encodeRange(region().center.latitude + region().span.latitude, 90)
+            latInt = self.latInt &+ (1 << (32 - bitCount / 2))
         case .s, .se, .sw:
-            latInt = Geohash.encodeRange(region().center.latitude - region().span.latitude, 90)
+            latInt = self.latInt &- (1 << (32 - bitCount / 2))
         }
+        
         let lngInt: UInt32
         switch direction {
         case .n, .s: lngInt = self.lngInt
         case .e, .ne, .se:
-            lngInt = Geohash.encodeRange(region().center.longitude + region().span.longitude, 180)
+            lngInt = self.lngInt &+ (1 << (32 - (bitCount - bitCount / 2)))
         case .w, .nw, .sw:
-            lngInt = Geohash.encodeRange(region().center.longitude - region().span.longitude, 180)
+            lngInt = self.lngInt &- (1 << (32 - (bitCount - bitCount / 2)))
         }
+        
         return Geohash(latInt: latInt, lngInt: lngInt, precision: precision, encoding: encoding)
     }
     
