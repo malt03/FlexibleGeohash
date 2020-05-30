@@ -39,11 +39,12 @@ public struct Geohash {
         }
     }
     
+    public var precision: Int { didSet { bitCount = precision * encoding.rawValue } }
+    public var encoding: Encoding { didSet { bitCount = precision * encoding.rawValue } }
+
     private let latInt: UInt32
     private let lngInt: UInt32
-    private let precision: Int
-    private let encoding: Encoding
-    private let bitCount: Int
+    private var bitCount: Int
     
     public init(coordinate: LatLngProtocol, precision: Int = 12, encoding: Encoding = .base32) {
         latInt = Geohash.encodeRange(coordinate.latitude, 90)
