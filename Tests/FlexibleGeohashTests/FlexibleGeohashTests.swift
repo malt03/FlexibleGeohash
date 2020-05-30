@@ -65,13 +65,13 @@ final class FlexibleGeohashTests: XCTestCase {
     func testNeighbors() {
         for testCase in NeighborsTestCase.get() {
             let neighbors = Geohash(hash: testCase.hash).neighbors().map { $0.hash() }
-            XCTAssertEqual(neighbors, testCase.neighbors)
+            XCTAssertEqual(Set(neighbors), Set(testCase.neighbors + [testCase.hash]))
         }
     }
 
     func testNeighbor() {
         for testCase in NeighborsTestCase.get() {
-            let neighbor = Geohash(hash: testCase.hash).getNeighbor(direction: .n).hash()
+            let neighbor = Geohash(hash: testCase.hash).neighbor(latitude: .north).hash()
             XCTAssertEqual(neighbor, testCase.neighbors[0])
         }
     }
