@@ -141,15 +141,16 @@ public struct Geohash {
     }
     
     private static let lookup = [Character]("0123456789bcdefghjkmnpqrstuvwxyz")
+    private static let reverseLookup = lookup.enumerated().reduce(into: [Character: UInt64]()) { $0[$1.element] = UInt64($1.offset) }
     private static func encodeBase(_ value: UInt64, encoding: Encoding, length: Int) -> String {
         let mask = encoding.getMask()
         return stride(from: encoding.rawValue, to: encoding.rawValue * length + 1, by: encoding.rawValue)
             .reduce(into: "", { $0 += String(lookup[Int(value >> (64 - $1) & mask)]) })
     }
     private static func decodeBase(_ value: String, encoding: Encoding) -> UInt64 {
-        let mask = (0..<encoding.rawValue).reduce(0 as UInt64, { $0 | 1 << $1 })
+        let mask = encoding.getMask()
         let decoded = value.reversed().enumerated().reduce(0) { (result, char) -> UInt64 in
-            guard let index = lookup.firstIndex(of: char.element) else { return 0 }
+            let index = reverseLookup[char.element]!
             return ((mask & UInt64(index)) << (char.offset * encoding.rawValue)) | result
         }
         return decoded << (64 - value.count * encoding.rawValue)
