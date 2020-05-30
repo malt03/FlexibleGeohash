@@ -42,20 +42,23 @@ public struct Geohash {
     private let lngInt: UInt32
     private let precision: Int
     private let encoding: Encoding
+    private let bitCount: Int
     
     public init(coordinate: LatLngProtocol, precision: Int = 12, encoding: Encoding = .base32) {
         latInt = Geohash.encodeRange(coordinate.latitude, 90)
         lngInt = Geohash.encodeRange(coordinate.longitude, 180)
         self.precision = precision
         self.encoding = encoding
+        bitCount = precision * encoding.rawValue
     }
     
     public init(hash: String, encoding: Encoding = .base32) {
-        let intHash = Geohash.decodeBase(hash, encoding: encoding)
-        latInt = Geohash.squash(intHash)
-        lngInt = Geohash.squash(intHash >> 1)
         precision = hash.count
         self.encoding = encoding
+        bitCount = precision * encoding.rawValue
+        let intHash = Geohash.decodeBase(hash, encoding: encoding, bitCount: bitCount)
+        latInt = Geohash.squash(intHash)
+        lngInt = Geohash.squash(intHash >> 1)
     }
     
     private init(latInt: UInt32, lngInt: UInt32, precision: Int, encoding: Encoding) {
@@ -63,6 +66,7 @@ public struct Geohash {
         self.lngInt = lngInt
         self.precision = precision
         self.encoding = encoding
+        bitCount = precision * encoding.rawValue
     }
     
     public func getNeighbor(direction: Direction) -> Geohash {
@@ -91,13 +95,13 @@ public struct Geohash {
     
     public func hash() -> String {
         let intHash = Geohash.spread(latInt) | (Geohash.spread(lngInt) << 1)
-        return Geohash.encodeBase(intHash, encoding: encoding, length: precision)
+        return Geohash.encodeBase(intHash, encoding: encoding, bitCount: bitCount)
     }
     
     public func region() -> Region {
         let lat = Geohash.decodeRange(latInt, 90)
         let lng = Geohash.decodeRange(lngInt, 180)
-        let error = Geohash.error(bitCount: precision * encoding.rawValue)
+        let error = Geohash.error(bitCount: bitCount)
         return Region(center: .init(lat + error.latitude / 2, lng + error.longitude / 2), span: error)
     }
     
@@ -142,17 +146,17 @@ public struct Geohash {
     
     private static let lookup = [Character]("0123456789bcdefghjkmnpqrstuvwxyz")
     private static let reverseLookup = lookup.enumerated().reduce(into: [Character: UInt64]()) { $0[$1.element] = UInt64($1.offset) }
-    private static func encodeBase(_ value: UInt64, encoding: Encoding, length: Int) -> String {
+    private static func encodeBase(_ value: UInt64, encoding: Encoding, bitCount: Int) -> String {
         let mask = encoding.getMask()
-        return stride(from: encoding.rawValue, to: encoding.rawValue * length + 1, by: encoding.rawValue)
+        return (stride(from: encoding.rawValue, to: bitCount + 1, by: encoding.rawValue) as StrideTo<Int>)
             .reduce(into: "", { $0 += String(lookup[Int(value >> (64 - $1) & mask)]) })
     }
-    private static func decodeBase(_ value: String, encoding: Encoding) -> UInt64 {
+    private static func decodeBase(_ value: String, encoding: Encoding, bitCount: Int) -> UInt64 {
         let mask = encoding.getMask()
         let decoded = value.reversed().enumerated().reduce(0) { (result, char) -> UInt64 in
             let index = reverseLookup[char.element]!
             return ((mask & UInt64(index)) << (char.offset * encoding.rawValue)) | result
         }
-        return decoded << (64 - value.count * encoding.rawValue)
+        return decoded << (64 - bitCount)
     }
 }
