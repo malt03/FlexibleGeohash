@@ -1,7 +1,10 @@
-# FlexibleGeohash
+# FlexibleGeohash [![Build Status](https://travis-ci.org/malt03/FlexibleGeohash.svg?branch=master)](https://travis-ci.org/malt03/FlexibleGeohash) [![SwiftPM compatible](https://img.shields.io/badge/SwiftPM-compatible-4BC51D.svg)](https://github.com/apple/swift-package-manager) ![License](https://img.shields.io/github/license/malt03/FlexibleGeohash.svg)
 
 FlexibleGeohash is a very high performance library for handling Geohash.  
 Geohash is usually encoded in base32, but it can be encoded in base2,4,8,16,32.
+
+I used [mmcloughlin/geohash](https://github.com/mmcloughlin/geohash) and [michael-groble/Geohash](https://github.com/michael-groble/Geohash) as a reference to create this library.  
+Thank you so much!
 
 ## Benchmark
 https://gist.github.com/malt03/7ac251ea0f47f4874c986a6720be3acf
