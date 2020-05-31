@@ -37,14 +37,14 @@ final class FlexibleGeohashTests: XCTestCase {
     
     func testEncode() {
         for testCase in EncodeTestCase.get() {
-            XCTAssertEqual(Geohash(coordinate: LatLng(testCase.lat, testCase.lng)).hash(), testCase.hash)
+            XCTAssertEqual(Geohash(coordinate: LatLng(testCase.lat, testCase.lng), precision: 12).hash(), testCase.hash)
         }
     }
 
     func testEncodeAndRedecode() {
         for testCase in EncodeTestCase.get() {
             let coordinate = LatLng(testCase.lat, testCase.lng)
-            let region = Geohash(coordinate: coordinate).region()
+            let region = Geohash(coordinate: coordinate, precision: 12).region()
             XCTAssert(region.contains(coordinate: coordinate), "\(coordinate) is not contained in \(region)")
         }
     }
