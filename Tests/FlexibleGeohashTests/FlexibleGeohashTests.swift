@@ -75,6 +75,50 @@ final class FlexibleGeohashTests: XCTestCase {
             XCTAssertEqual(neighbor, testCase.neighbors[0])
         }
     }
+    
+    func testChangePrecision() {
+        var fullGeohash = Geohash(hash: String(repeating: "z", count: 12))
+        fullGeohash.precision = 1
+        XCTAssertEqual(fullGeohash.hash(), "z")
+        fullGeohash.precision = 12
+        XCTAssertEqual(fullGeohash.hash(), String(repeating: "z", count: 12))
+
+        var singleGeohash = Geohash(hash: "z")
+        singleGeohash.precision = 12
+        XCTAssertEqual(singleGeohash.hash(), "z" + String(repeating: "0", count: 11))
+        singleGeohash.precision = 1
+        XCTAssertEqual(singleGeohash.hash(), "z")
+    }
+    
+    func testEncoding() {
+        var geohash = Geohash(hash: String(repeating: "1", count: 64), encoding: .base2)
+        XCTAssertEqual(geohash.hash(), String(repeating: "1", count: 64))
+        geohash.encoding = .base4
+        geohash.precision = 32
+        XCTAssertEqual(geohash.hash(), String(repeating: "3", count: 32))
+        geohash.encoding = .base8
+        geohash.precision = 21
+        XCTAssertEqual(geohash.hash(), String(repeating: "7", count: 21))
+        geohash.encoding = .base16
+        geohash.precision = 16
+        XCTAssertEqual(geohash.hash(), String(repeating: "g", count: 16))
+        geohash.encoding = .base32
+        geohash.precision = 12
+        XCTAssertEqual(geohash.hash(), String(repeating: "z", count: 12))
+    }
+    
+    func testBoundaryNeighbor() {
+        do {
+            let geohash = Geohash(hash: String(repeating: "0", count: 16), encoding: .base16)
+            let neighbor = geohash.neighbor(latitude: .south, longitude: .west)
+            XCTAssertEqual(neighbor.hash(), String(repeating: "g", count: 16))
+        }
+        do {
+            let geohash = Geohash(hash: "zzz", encoding: .base16)
+            let neighbor = geohash.neighbor(latitude: .north, longitude: .east)
+            XCTAssertEqual(neighbor.hash(), "000")
+        }
+    }
 }
 
 extension Region {
