@@ -101,8 +101,7 @@ _ = Geohash(hash: "2331", encoding: .base8).region().mk()
 - On Xcode, click `File` > `Swift Packages` > `Add Package Dependency...`
 - Input `https://github.com/malt03/FlexibleGeohash.git`
 
-## Installation
+### [CocoaPods](https://github.com/cocoapods/cocoapods)
 
-```ruby
-pod "FlexibleGeohash"
-```
+- Insert `pod 'FlexibleGeohash'` to your Podfile.
+- Run `pod install`.
