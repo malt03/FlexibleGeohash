@@ -1,4 +1,4 @@
-# FlexibleGeohash [![Build Status](https://travis-ci.org/malt03/FlexibleGeohash.svg?branch=master)](https://travis-ci.org/malt03/FlexibleGeohash) [![SwiftPM compatible](https://img.shields.io/badge/SwiftPM-compatible-4BC51D.svg)](https://github.com/apple/swift-package-manager) ![License](https://img.shields.io/github/license/malt03/FlexibleGeohash.svg)
+# FlexibleGeohash [![Build Status](https://travis-ci.org/malt03/FlexibleGeohash.svg?branch=master)](https://travis-ci.org/malt03/FlexibleGeohash) [![SwiftPM compatible](https://img.shields.io/badge/SwiftPM-compatible-4BC51D.svg)](https://github.com/apple/swift-package-manager) ![Cocoapods](https://img.shields.io/cocoapods/v/FlexibleGeohash) ![License](https://img.shields.io/github/license/malt03/FlexibleGeohash.svg)
 
 FlexibleGeohash is a very fast library for handling [Geohash](https://en.wikipedia.org/wiki/Geohash).  
 Geohash is usually encoded in base32, but it can be encoded in base2/4/8/16/32.
@@ -92,4 +92,17 @@ _ = Geohash(hash: "2331", encoding: .base8).region().mk()
 //     center: CLLocationCoordinate2D(latitude: 37.96875, longitude: -120.9375),
 //     span: MKCoordinateSpan(latitudeDelta: 2.8125, longitudeDelta: 5.625)
 // )
+```
+
+## Installation
+
+### [SwiftPM](https://github.com/apple/swift-package-manager) (Recommended)
+
+- On Xcode, click `File` > `Swift Packages` > `Add Package Dependency...`
+- Input `https://github.com/malt03/FlexibleGeohash.git`
+
+## Installation
+
+```ruby
+pod "FlexibleGeohash"
 ```
