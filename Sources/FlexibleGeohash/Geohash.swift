@@ -9,16 +9,11 @@ import Foundation
 import CoreLocation
 
 public struct Geohash {
-    public enum LatitudeDirection: Int, CaseIterable {
-        case north = 1
-        case central = 0
-        case south = -1
-    }
-    
-    public enum LongitudeDirection: Int, CaseIterable {
-        case east = 1
-        case central = 0
-        case west = -1
+    public enum Direction: Int, CaseIterable {
+        case north
+        case south
+        case east
+        case west
     }
     
     public enum Encoding: Int {
@@ -71,30 +66,51 @@ public struct Geohash {
         bitCount = precision * encoding.rawValue
     }
     
-    public func neighbor(latitude: LatitudeDirection = .central, longitude: LongitudeDirection = .central) -> Geohash {
-        let latInt: UInt32
-        switch latitude {
-        case .north: latInt = self.latInt &+ (1 << (32 - bitCount / 2))
-        case .south: latInt = self.latInt &- (1 << (32 - bitCount / 2))
-        case .central: latInt = self.latInt
+    public func neighbor(_ direction: Direction) -> Geohash {
+        switch direction {
+        case .north:
+            return Geohash(
+                latInt: self.latInt &+ (1 << (32 - bitCount / 2)),
+                lngInt: lngInt,
+                precision: precision,
+                encoding: encoding
+            )
+        case .south:
+            return Geohash(
+                latInt: self.latInt &- (1 << (32 - bitCount / 2)),
+                lngInt: lngInt,
+                precision: precision,
+                encoding: encoding
+            )
+        case .east:
+            return Geohash(
+                latInt: self.latInt,
+                lngInt: self.lngInt &+ (1 << (32 - (bitCount - bitCount / 2))),
+                precision: precision,
+                encoding: encoding
+            )
+        case .west:
+            return Geohash(
+                latInt: self.latInt,
+                lngInt: self.lngInt &- (1 << (32 - (bitCount - bitCount / 2))),
+                precision: precision,
+                encoding: encoding
+            )
         }
-        
-        let lngInt: UInt32
-        switch longitude {
-        case .east: lngInt = self.lngInt &+ (1 << (32 - (bitCount - bitCount / 2)))
-        case .west: lngInt = self.lngInt &- (1 << (32 - (bitCount - bitCount / 2)))
-        case .central: lngInt = self.lngInt
-        }
-        
-        return Geohash(latInt: latInt, lngInt: lngInt, precision: precision, encoding: encoding)
     }
     
     public func neighbors() -> [Geohash] {
-        LatitudeDirection.allCases.flatMap { (lat) in
-            LongitudeDirection.allCases.map { (lng) in
-                neighbor(latitude: lat, longitude: lng)
-            }
-        }
+        return [
+            neighbor(.east),
+            neighbor(.east).neighbor(.north),
+            neighbor(.east).neighbor(.south),
+            neighbor(.north),
+            self,
+            neighbor(.south),
+            neighbor(.west),
+            neighbor(.west).neighbor(.north),
+            neighbor(.west).neighbor(.south),
+        ]
     }
     
     public func hash() -> String {
