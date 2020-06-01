@@ -101,6 +101,18 @@ _ = Geohash.span(precision: 7) // latitude: 0.001373291015625, longitude: 0.0013
 _ = Geohash.span(precision: 7, encoding: .base2) // latitude: 22.5, longitude: 22.5
 ```
 
+### Setting default precision / encoding
+```swift
+Geohash.defaultPrecision = 4
+Geohash.defaultEncoding = .base2
+_ = Geohash(coordinate: LatLng(37.331667, -122.030833)).hash() // "0100"
+_ = Geohash(hash: "0100").region().mk()
+// MKCoordinateRegion(
+//     center: CLLocationCoordinate2D(latitude: 22.5, longitude: -135),
+//     span: MKCoordinateSpan(latitudeDelta: 45, longitudeDelta: 90)
+// )
+```
+
 ## Installation
 
 ### [SwiftPM](https://github.com/apple/swift-package-manager) (Recommended)
