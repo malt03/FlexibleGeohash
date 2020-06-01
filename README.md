@@ -95,6 +95,12 @@ _ = Geohash(hash: "2331", encoding: .base8).region().mk()
 // )
 ```
 
+### Getting Span for precision
+```swift
+_ = Geohash.span(precision: 7) // latitude: 0.001373291015625, longitude: 0.001373291015625
+_ = Geohash.span(precision: 7, encoding: .base2) // latitude: 22.5, longitude: 22.5
+```
+
 ## Installation
 
 ### [SwiftPM](https://github.com/apple/swift-package-manager) (Recommended)
