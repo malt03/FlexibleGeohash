@@ -9,6 +9,9 @@ import Foundation
 import CoreLocation
 
 public struct Geohash {
+    public static var defaultEncoding = Encoding.base32
+    public static var defaultPrecision = 12
+    
     public enum Direction: Int, CaseIterable {
         case north
         case south
@@ -41,7 +44,7 @@ public struct Geohash {
     private let lngInt: UInt32
     private var bitCount: Int
     
-    public init(coordinate: LatLngProtocol, precision: Int, encoding: Encoding = .base32) {
+    public init(coordinate: LatLngProtocol, precision: Int = defaultPrecision, encoding: Encoding = defaultEncoding) {
         latInt = Geohash.encodeRange(coordinate.latitude, 90)
         lngInt = Geohash.encodeRange(coordinate.longitude, 180)
         self.precision = precision
@@ -49,7 +52,7 @@ public struct Geohash {
         bitCount = precision * encoding.rawValue
     }
     
-    public init(hash: String, encoding: Encoding = .base32) {
+    public init(hash: String, encoding: Encoding = defaultEncoding) {
         precision = hash.count
         self.encoding = encoding
         bitCount = precision * encoding.rawValue
@@ -125,7 +128,7 @@ public struct Geohash {
         return Region(center: .init(lat + span.latitude / 2, lng + span.longitude / 2), span: span)
     }
     
-    public static func span(precision: Int, encoding: Encoding = .base32) -> LatLng {
+    public static func span(precision: Int, encoding: Encoding = defaultEncoding) -> LatLng {
         span(bitCount: precision * encoding.rawValue)
     }
     

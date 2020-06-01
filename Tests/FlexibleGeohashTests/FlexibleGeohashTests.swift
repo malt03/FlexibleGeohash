@@ -124,6 +124,28 @@ final class FlexibleGeohashTests: XCTestCase {
         XCTAssertEqual(Geohash.span(precision: 1), LatLng(45, 45))
         XCTAssertEqual(Geohash.span(precision: 1, encoding: .base2), LatLng(180, 180))
     }
+    
+    func testDefault() {
+        XCTAssertEqual(Geohash(coordinate: LatLng(37.331667, -122.030833)).hash(), "9q9hrh5berpg")
+        XCTAssertEqual(
+            Geohash(hash: "9q9hrh5berpg").region(),
+            Region(center: LatLng(37.3316669370, -122.03083293512), span: LatLng(1.676e-07, 3.352e-07))
+        )
+        XCTAssertEqual(Geohash.span(precision: 1), LatLng(45, 45))
+        
+        Geohash.defaultEncoding = .base2
+        Geohash.defaultPrecision = 4
+        
+        XCTAssertEqual(Geohash(coordinate: LatLng(37.331667, -122.030833)).hash(), "0100")
+        XCTAssertEqual(
+            Geohash(hash: "0100").region(),
+            Region(center: LatLng(22.5, -135), span: LatLng(45, 90))
+        )
+        XCTAssertEqual(Geohash.span(precision: 1), LatLng(180, 180))
+        
+        Geohash.defaultEncoding = .base32
+        Geohash.defaultPrecision = 12
+    }
 }
 
 extension Region {
