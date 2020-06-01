@@ -76,6 +76,7 @@ _ = apple.neighbors().map { $0.hash() } // ["9q9h001", "9q9h003", "9q95bpc", "9q
 ```
 
 ### Using with base8
+Naturally, Geohash encoded by something other than base32 is not compatible with the one encoded by base32.
 ```swift
 let appleCoordinate = CLLocationCoordinate2D(latitude: 37.331667, longitude: -122.030833)
 var apple = Geohash(coordinate: appleCoordinate, precision: 21, encoding: .base8)
