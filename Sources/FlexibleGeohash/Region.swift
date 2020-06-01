@@ -8,8 +8,8 @@
 import Foundation
 
 public struct Region {
-    let center: LatLng
-    let span: LatLng
+    public let center: LatLng
+    public let span: LatLng
     
     public init(center: LatLng, span: LatLng) {
         self.center = center
