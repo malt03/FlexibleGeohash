@@ -146,6 +146,18 @@ final class FlexibleGeohashTests: XCTestCase {
         Geohash.defaultEncoding = .base32
         Geohash.defaultPrecision = 12
     }
+    
+    func testRegion() {
+        var a = Geohash(hash: "33")
+        a.precision = 1
+        let b = Geohash(hash: "3")
+        XCTAssertEqual(a.region(), b.region())
+        
+        XCTAssertEqual(
+            Geohash(coordinate: LatLng(-90, -180), precision: 1).region(),
+            Geohash(coordinate: LatLng(-89, -179), precision: 1).region()
+        )
+    }
 }
 
 extension Region {

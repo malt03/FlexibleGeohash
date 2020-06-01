@@ -122,8 +122,8 @@ public struct Geohash {
     }
     
     public func region() -> Region {
-        let lat = Geohash.decodeRange(latInt, 90)
-        let lng = Geohash.decodeRange(lngInt, 180)
+        let lat = Geohash.decodeRange(latInt, 90, bitCount: bitCount / 2)
+        let lng = Geohash.decodeRange(lngInt, 180, bitCount: bitCount - bitCount / 2)
         let span = Geohash.span(bitCount: bitCount)
         return Region(center: .init(lat + span.latitude / 2, lng + span.longitude / 2), span: span)
     }
@@ -145,8 +145,9 @@ public struct Geohash {
         return UInt32(p * exp232)
     }
     
-    private static func decodeRange(_ x: UInt32, _ r: Double) -> Double {
-        let p = Double(x) / exp232
+    private static func decodeRange(_ x: UInt32, _ r: Double, bitCount: Int) -> Double {
+        let shift = 32 - bitCount
+        let p = Double((x >> shift) << shift) / exp232
         return 2 * r * p - r
     }
     
