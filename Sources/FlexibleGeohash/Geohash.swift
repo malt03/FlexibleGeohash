@@ -128,7 +128,7 @@ public struct Geohash {
         return Region(center: .init(lat + span.latitude / 2, lng + span.longitude / 2), span: span)
     }
     
-    public static func span(precision: Int, encoding: Encoding = defaultEncoding) -> LatLng {
+    public static func span(precision: Int = defaultPrecision, encoding: Encoding = defaultEncoding) -> LatLng {
         span(bitCount: precision * encoding.rawValue)
     }
     

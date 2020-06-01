@@ -131,7 +131,7 @@ final class FlexibleGeohashTests: XCTestCase {
             Geohash(hash: "9q9hrh5berpg").region(),
             Region(center: LatLng(37.3316669370, -122.03083293512), span: LatLng(1.676e-07, 3.352e-07))
         )
-        XCTAssertEqual(Geohash.span(precision: 1), LatLng(45, 45))
+        XCTAssertEqual(Geohash.span(), LatLng(1.676e-07, 3.352e-07))
         
         Geohash.defaultEncoding = .base2
         Geohash.defaultPrecision = 4
@@ -141,7 +141,7 @@ final class FlexibleGeohashTests: XCTestCase {
             Geohash(hash: "0100").region(),
             Region(center: LatLng(22.5, -135), span: LatLng(45, 90))
         )
-        XCTAssertEqual(Geohash.span(precision: 1), LatLng(180, 180))
+        XCTAssertEqual(Geohash.span(), LatLng(45, 90))
         
         Geohash.defaultEncoding = .base32
         Geohash.defaultPrecision = 12
