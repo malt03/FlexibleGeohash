@@ -121,11 +121,15 @@ public struct Geohash {
     public func region() -> Region {
         let lat = Geohash.decodeRange(latInt, 90)
         let lng = Geohash.decodeRange(lngInt, 180)
-        let error = Geohash.error(bitCount: bitCount)
-        return Region(center: .init(lat + error.latitude / 2, lng + error.longitude / 2), span: error)
+        let span = Geohash.span(bitCount: bitCount)
+        return Region(center: .init(lat + span.latitude / 2, lng + span.longitude / 2), span: span)
     }
     
-    private static func error(bitCount: Int) -> LatLng {
+    public static func span(precision: Int, encoding: Encoding = .base32) -> LatLng {
+        span(bitCount: precision * encoding.rawValue)
+    }
+    
+    private static func span(bitCount: Int) -> LatLng {
         let latBitCount = bitCount / 2
         let lngBitCount = bitCount - latBitCount
         return .init(scalbn(180.0, -latBitCount), scalbn(360.0, -lngBitCount))

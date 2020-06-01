@@ -119,6 +119,11 @@ final class FlexibleGeohashTests: XCTestCase {
             XCTAssertEqual(neighbor.hash(), "000")
         }
     }
+    
+    func testGettingSpan() {
+        XCTAssertEqual(Geohash.span(precision: 1), LatLng(45, 45))
+        XCTAssertEqual(Geohash.span(precision: 1, encoding: .base2), LatLng(180, 180))
+    }
 }
 
 extension Region {
