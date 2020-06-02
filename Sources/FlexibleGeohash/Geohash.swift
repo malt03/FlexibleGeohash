@@ -39,7 +39,6 @@ public struct Geohash {
     
     public var precision: Int { didSet { bitCount = precision * encoding.rawValue } }
     public var encoding: Encoding { didSet { bitCount = precision * encoding.rawValue } }
-    public var bitHash: UInt64 { Geohash.spread(latInt) | (Geohash.spread(lngInt) << 1) }
 
     private let latInt: UInt32
     private let lngInt: UInt32
@@ -118,9 +117,17 @@ public struct Geohash {
     }
     
     public func hash() -> String {
-        return Geohash.encodeBase(bitHash, encoding: encoding, bitCount: bitCount)
+        return Geohash.encodeBase(fullBitHash(), encoding: encoding, bitCount: bitCount)
     }
     
+    public func bitHash() -> UInt64 {
+        fullBitHash() >> (64 - bitCount)
+    }
+    
+    private func fullBitHash() -> UInt64 {
+        Geohash.spread(latInt) | (Geohash.spread(lngInt) << 1)
+    }
+
     public func region() -> Region {
         let lat = Geohash.decodeRange(latInt, 90, bitCount: bitCount / 2)
         let lng = Geohash.decodeRange(lngInt, 180, bitCount: bitCount - bitCount / 2)

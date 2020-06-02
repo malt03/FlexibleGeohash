@@ -158,6 +158,12 @@ final class FlexibleGeohashTests: XCTestCase {
             Geohash(coordinate: LatLng(-89, -179), precision: 1).region()
         )
     }
+    
+    func testBitHash() {
+        var geohash = Geohash(hash: String(repeating: "1", count: 64), encoding: .base2)
+        geohash.precision = 4
+        XCTAssertEqual(geohash.bitHash(), 15)
+    }
 }
 
 extension Region {
