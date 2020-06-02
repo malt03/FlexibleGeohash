@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = 'FlexibleGeohash'
-  s.version          = '0.0.4'
+  s.version          = '0.0.5'
   s.summary          = 'Very fast library for handling Geohash. Encodable in other than base32.'
 
   s.description      = <<-DESC
