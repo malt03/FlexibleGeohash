@@ -108,7 +108,6 @@ public struct Geohash {
             neighbor(.east).neighbor(.north),
             neighbor(.east).neighbor(.south),
             neighbor(.north),
-            self,
             neighbor(.south),
             neighbor(.west),
             neighbor(.west).neighbor(.north),

@@ -65,7 +65,7 @@ final class FlexibleGeohashTests: XCTestCase {
     func testNeighbors() {
         for testCase in NeighborsTestCase.get() {
             let neighbors = Geohash(hash: testCase.hash).neighbors().map { $0.hash() }
-            XCTAssertEqual(Set(neighbors), Set(testCase.neighbors + [testCase.hash]))
+            XCTAssertEqual(Set(neighbors), Set(testCase.neighbors))
         }
     }
 

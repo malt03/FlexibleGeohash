@@ -62,17 +62,14 @@ print(apple.region().mk())
 ```
 
 ### Getting neighbors
-In many Geohash libraries, the neighbors function returns 8 hashes of around it.  
-However, this library returns **9 values**, including its own.  
-Because there is no performance disadvantage and in many cases it is easier to use.
 ```swift
 var apple = Geohash(hash: "9q9h")
 _ = apple.neighbor(.north).hash() // 9q9j
-_ = apple.neighbors().map { $0.hash() } // ["9q9k", "9q9m", "9q97", "9q9j", "9q9h", "9q95", "9q8u", "9q8v", "9q8g"]
+_ = apple.neighbors().map { $0.hash() } // ["9q9k", "9q9m", "9q97", "9q9j", "9q95", "9q8u", "9q8v", "9q8g"]
 apple.precision = 1
-_ = apple.neighbors().map { $0.hash() } // ["d", "f", "6", "c", "9", "3", "8", "b", "2"]
+_ = apple.neighbors().map { $0.hash() } // ["d", "f", "6", "c", "3", "8", "b", "2"]
 apple.precision = 7
-_ = apple.neighbors().map { $0.hash() } // ["9q9h001", "9q9h003", "9q95bpc", "9q9h002", "9q9h000", "9q95bpb", "9q8upbp", "9q8upbr", "9q8gzzz"]
+_ = apple.neighbors().map { $0.hash() } // ["9q9h001", "9q9h003", "9q95bpc", "9q9h002", "9q95bpb", "9q8upbp", "9q8upbr", "9q8gzzz"]
 ```
 
 ### Using with base8
