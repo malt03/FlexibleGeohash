@@ -164,6 +164,11 @@ final class FlexibleGeohashTests: XCTestCase {
         geohash.precision = 4
         XCTAssertEqual(geohash.bitHash(), 15)
     }
+    
+    func testInitWithBitHash() {
+        let geohash = Geohash(bitHash: 15, precision: 4, encoding: .base2)
+        XCTAssertEqual(geohash.bitHash(), 15)
+    }
 }
 
 extension Region {

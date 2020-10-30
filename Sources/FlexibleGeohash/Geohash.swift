@@ -61,6 +61,15 @@ public struct Geohash {
         lngInt = Geohash.squash(intHash >> 1)
     }
     
+    public init(bitHash: UInt64, precision: Int = defaultPrecision, encoding: Encoding = defaultEncoding) {
+        let fullBitHash = bitHash << (64 - precision)
+        self.latInt = Geohash.squash(fullBitHash)
+        self.lngInt = Geohash.squash(fullBitHash >> 1)
+        self.precision = precision
+        self.encoding = encoding
+        bitCount = precision * encoding.rawValue
+    }
+    
     private init(latInt: UInt32, lngInt: UInt32, precision: Int, encoding: Encoding) {
         self.latInt = latInt
         self.lngInt = lngInt
